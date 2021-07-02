@@ -1,0 +1,16 @@
+@prefix mu: <http://mu.semte.ch/vocabularies/core/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema: <http://schema.org/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+@prefix band: <http://mu.semte.ch/services/github/madnificent/book-service/bands/>
+@prefix song: <http://mu.semte.ch/services/github/madnificent/book-service/songs/>
+
+
+GRAPH <http://mu.semte.ch/graphs/public> {
+    band:60DED9E8BE7F9A0009000004
+        a schema:Band;
+        mu:uuid "60DED9E8BE7F9A0009000004";
+        schema:description "much empty";
+        schema:name "Boob twisters" .
+}
