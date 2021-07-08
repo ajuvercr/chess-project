@@ -25,8 +25,6 @@ defmodule Acl.UserGroups.Config do
                     graph: "http://mu.semte.ch/public",
                     constraint: %ResourceConstraint{
                       resource_types: [
-                          "http://schema.org/name",
-                          "http://schema.org/description",
                           "http://schema.org/Band",
                           "http://schema.org/Song",
                           "http://schema.org/Game",
@@ -36,7 +34,7 @@ defmodule Acl.UserGroups.Config do
 
       %GroupSpec{
         name: "user-lookup",
-        useage: [:write, :read],
+        useage: [:read],
         access: %AlwaysAccessible{},
         graphs: [ %GraphSpec{
                   graph: "http://mu.semte.ch/users",
@@ -46,7 +44,6 @@ defmodule Acl.UserGroups.Config do
                         "http://xmlns.com/foaf/0.1/accountName"
                       ] } }
                 } ] },
-
 
       # // CLEANUP
       #

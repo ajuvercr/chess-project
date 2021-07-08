@@ -7,7 +7,7 @@ services:
       LOG_SESSION_ID: "true"
       LOG_INCOMING_ALLOWED_GROUPS: "true"
       LOG_OUTGOING_ALLOWED_GROUPS: "true"
-      DEFAULT_MU_AUTH_ALLOWED_GROUPS_HEADER: "[{\"variables\":[],\"name\":\"public\"}, {\"variables\":[],\"name\":\"user-lookup\"}]"
+      DEFAULT_MU_AUTH_ALLOWED_GROUPS_HEADER: "[{\"variables\":[],\"name\":\"public\"}, {\"variables\":[],\"name\":\"user-lookup\"}, {\"variables\":[],\"name\":\"clean\"}]"
     links:
       - dispatcher:dispatcher
     ports:
