@@ -50,6 +50,10 @@ defmodule Dispatcher do
     Proxy.forward conn, path, "http://myMicroservice/"
   end
 
+  match "/ws/*path" do
+    Proxy.forward conn, path, "http://myMicroservice:8080/"
+  end
+
   match "/sparql/*path" do
     Proxy.forward conn, path, "http://db:8890/sparql"
   end

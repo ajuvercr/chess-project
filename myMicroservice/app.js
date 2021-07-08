@@ -1,6 +1,8 @@
 import { app, query, sparqlEscapeUri } from 'mu';
 
 import bodyParser from 'body-parser';
+import * as http from 'http';
+const server = http.createServer(app);
 
 app.use( bodyParser.json( {
     type: function(req) {
@@ -34,7 +36,21 @@ app.get('/query', function (req, res) {
 });
 
 app.post("/delta", (req, res) => {
-    // console.log('Delta body:', JSON.stringify(req.body));
+    console.log('Delta body:', JSON.stringify(req.body));
     // console.log(JSON.stringify(req));
     res.sendStatus(200);
+});
+
+const WebSocket = require('ws');
+
+const wss = new WebSocket.Server({ port:8080 });
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    ws.send('something2');
+    console.log('received: %s', message)
+  });
+
+  console.log("Got ws connection!");
+  ws.send('something1', (e) => console.log("error", e));
 });
