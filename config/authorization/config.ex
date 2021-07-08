@@ -1,4 +1,8 @@
 alias Acl.Accessibility.Always, as: AlwaysAccessible
+alias Acl.Accessibility.ByQuery, as: AccessByQuery
+alias Acl.GraphSpec.Constraint.Resource.AllPredicates, as: AllPredicates
+alias Acl.GraphSpec.Constraint.Resource.NoPredicates, as: NoPredicates
+alias Acl.GraphSpec.Constraint.ResourceFormat, as: ResourceFormatConstraint
 alias Acl.GraphSpec.Constraint.Resource, as: ResourceConstraint
 alias Acl.GraphSpec, as: GraphSpec
 alias Acl.GroupSpec, as: GroupSpec
@@ -13,41 +17,35 @@ defmodule Acl.UserGroups.Config do
     # many ways.  The useage of a GroupSpec and GraphCleanup are
     # common.
     [
-      # // PUBLIC
       %GroupSpec{
         name: "public",
-        useage: [:read],
+        useage: [:write, :read],
         access: %AlwaysAccessible{},
         graphs: [ %GraphSpec{
-                    graph: "http://mu.semte.ch/graphs/public",
+                    graph: "http://mu.semte.ch/public",
                     constraint: %ResourceConstraint{
                       resource_types: [
+                          "http://schema.org/name",
+                          "http://schema.org/description",
                           "http://schema.org/Band",
-                          "http://schema.org/Song"
+                          "http://schema.org/Song",
+                          "http://schema.org/Game",
+                          "http://schema.org/Move"
                       ]
                     } } ] },
 
       %GroupSpec{
-        name: "public_single",
-        useage: [:read, :write],
-        access: %AccessByQuery{
-          vars: ["session_group_id","session_role"],
-          query: "PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-            PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-
-            SELECT ?session_group ?session_role WHERE {
-              <SESSION_ID> ext:sessionGroup/mu:uuid ?session_group_id;
-                          ext:sessionRole ?session_role.
-              FILTER( ?session_role = \"SuperMegaAdmin\" )
-            }
-        " },
+        name: "user-lookup",
+        useage: [:write, :read],
+        access: %AlwaysAccessible{},
         graphs: [ %GraphSpec{
-                    graph: "http://mu.semte.ch/graphs/public",
-                    constraint: %ResourceConstraint{
-                      resource_types: [
-                          "http://schema.org/Song"
-                      ]
-                    } } ] },
+                  graph: "http://mu.semte.ch/users",
+                  constraint: %ResourceConstraint{
+                    predicates: %AllPredicates{
+                      except: [
+                        "http://xmlns.com/foaf/0.1/accountName"
+                      ] } }
+                } ] },
 
 
       # // CLEANUP

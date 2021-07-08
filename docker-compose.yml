@@ -5,6 +5,9 @@ services:
     image: semtech/mu-identifier:1.9.1
     environment:
       LOG_SESSION_ID: "true"
+      LOG_INCOMING_ALLOWED_GROUPS: "true"
+      LOG_OUTGOING_ALLOWED_GROUPS: "true"
+      DEFAULT_MU_AUTH_ALLOWED_GROUPS_HEADER: "[{\"variables\":[],\"name\":\"public\"}, {\"variables\":[],\"name\":\"user-lookup\"}]"
     links:
       - dispatcher:dispatcher
     ports:
@@ -29,6 +32,14 @@ services:
     image: semtech/mu-authorization:0.6.0-beta.5
     environment:
       MU_SPARQL_ENDPOINT: "http://triplestore:8890/sparql"
+      LOG_INCOMING_SPARQL_QUERIES: "true"
+      LOG_OUTGOING_SPARQL_QUERIES: "true"
+      LOG_OUTGOING_SPARQL_QUERY_ROUNDTRIP: "false"
+      LOG_ACCESS_RIGHTS: "true"
+      INSPECT_ACCESS_RIGHTS_PROCESSING: "false"
+      LOG_OUTGOING_SPARQL_QUERY_RESPONSES: "false"
+      LOG_DELTA_MESSAGES: "false"
+      LOG_DELTA_CLIENT_COMMUNICATION: "false"
     volumes:
       - ./config/authorization:/config
   resource:
@@ -37,5 +48,34 @@ services:
       - db:database
     volumes:
       - ./config/resources:/config
+  registration:
+    image: semtech/mu-registration-service:2.6.0
+    links:
+      - db:database
+    environment:
+      MU_APPLICATION_GRAPH: "http://mu.semte.ch/users"
   login:
-    image: lblod/mock-login-service
+    image: semtech/mu-login-service:2.9.0
+    links:
+      - db:database
+    environment:
+      SESSIONS_GRAPH: "http://mu.semte.ch/public"
+      USERS_GRAPH: "http://mu.semte.ch/users"
+  deltanotifier:
+    image: semtech/mu-delta-notifier
+    volumes:
+      - ./config/delta:/config
+    environment:
+      DEBUG_DELTA_SEND: "true"
+      DEBUG_DELTA_MATCH: "true"
+      DEBUG_TRIPLE_MATCHES_SPEC: "true"
+  myMicroservice:
+    image: semtech/mu-javascript-template
+    ports:
+      - 8888:80
+    environment:
+      NODE_ENV: "development"
+    links:
+      - db:database
+    volumes:
+      - ./myMicroservice/:/app/
