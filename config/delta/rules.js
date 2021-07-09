@@ -1,14 +1,27 @@
 export default [
     {
         match: {
-            graph: { value: "http://mu.semte.ch/public", type: "uri" }
+            object: {"value":"http://schema.org/Move","type":"uri"}
         },
         callback: {
             url: "http://myMicroservice/delta", method: "POST"
         },
         options: {
             resourceFormat: "v0.0.1",
-            gracePeriod: 1000,
+            gracePeriod: 500,
+            ignoreFromSelf: true
+        }
+    },
+    {
+        match: {
+            predicate: {"value":"http://schema.org/Game","type":"uri"}
+        },
+        callback: {
+            url: "http://myMicroservice/delta", method: "POST"
+        },
+        options: {
+            resourceFormat: "v0.0.1",
+            gracePeriod: 500,
             ignoreFromSelf: true
         }
     }
