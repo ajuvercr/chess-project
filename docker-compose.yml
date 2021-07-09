@@ -51,13 +51,13 @@ services:
   registration:
     image: semtech/mu-registration-service:2.6.0
     links:
-      - db:database
+      - triplestore:database
     environment:
       MU_APPLICATION_GRAPH: "http://mu.semte.ch/users"
   login:
     image: semtech/mu-login-service:2.9.0
     links:
-      - db:database
+      - triplestore:database
     environment:
       SESSIONS_GRAPH: "http://mu.semte.ch/public"
       USERS_GRAPH: "http://mu.semte.ch/users"

@@ -3,6 +3,16 @@ import { app, query, sparqlEscapeUri } from 'mu';
 import bodyParser from 'body-parser';
 
 
+function objectToId(subject) {
+  for (let base of ["http://mu.semte.ch/services/github/madnificent/book-service/games/", "http://mu.semte.ch/services/github/madnificent/book-service/moves/"]) {
+    const uri_start = subject.indexOf(base);
+    if (uri_start >= 0) {
+      return subject.slice(uri_start + base.length);
+    }
+  }
+  console.log(`Could not determine field '${subject}'`);
+}
+
 function predicateToField(predicate) {
   const { value, type } = predicate;
   if (type !== "uri") {
@@ -66,7 +76,8 @@ app.get('/query', function (req, res) {
 const tag_list = [
   { fields: ["fromx", "fromy", "tox", "toy", "index", "gameid"], tag: "move" },
   // Add player game register
-  { fields: ["gameid", "playerid"], tag: "player_register" },
+  { fields: ["gameid", "black"], tag: "black_register" },
+  { fields: ["gameid", "white"], tag: "white_register" },
 ];
 
 function addInsert(changed, insert) {
@@ -104,7 +115,7 @@ function checkFinished(s) {
 
 
 app.post("/delta", (req, res) => {
-  console.log('Delta body:', JSON.stringify(req.body));
+  // console.log('Delta body:', JSON.stringify(req.body));
 
   for (let delta of req.body) {
     const changed = new Set();
@@ -124,13 +135,30 @@ app.post("/delta", (req, res) => {
   res.sendStatus(200);
 });
 
+app.post("/delta2", (req, res) => {
+  for (let delta of req.body) {
+    const changed = new Set();
+
+    for (let insert of delta.inserts) {
+      addInsert(changed, insert)
+    }
+
+    for (let remove of delta.deletes) {
+      console.error("unhandled delete delta", remove);
+    }
+
+    for (let s of changed) {
+      build_dict[s].gameid = objectToId(s);
+      checkFinished(s);
+    }
+  }
+
+  res.sendStatus(200);
+});
+
 function broadcast(action, tag) {
-  // todo
-  console.log("broadcasting", action, tag);
-  for(let id in ws_connections)
-  {
-    console.log("ws id", id);
-    ws_connections[id].send(JSON.stringify({tag, action}));
+  for (let id in ws_connections) {
+    ws_connections[id].send(JSON.stringify({ tag, action }));
   }
 }
 
